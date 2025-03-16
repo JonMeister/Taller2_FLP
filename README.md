@@ -18,5 +18,3 @@ Este repositorio contiene tres archivos principales escritos en Racket para la m
 1. Abre DrRacket.
 2. Carga el archivo deseado (`CircuitosDT.rkt`, `CircuitosListas.rkt` o `ParseUnparse.rkt`).
 3. Ejecuta las funciones disponibles en cada módulo para analizar circuitos.
-
-Si necesitas más información o ejemplos de uso, házmelo saber. 🚀
