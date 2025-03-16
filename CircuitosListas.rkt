@@ -1,26 +1,24 @@
-#lang eopl
-
-;; Taller 2: Abstraccion de datos y sintaxis abstracta
+;; Taller 2: Abstracción de datos y sintáxis abstracta
 ;; Integrantes grupo #15:
 ;; Jonathan Aristizabal - 2322626
 ;; Andrey Quiceno - 2326081
 ;; Johan Ceballos - 2372229
 ;; Fecha: 14-03-2025
 
-
+#lang eopl
 
 ;; ==========================
-;; Gramática BNF en Racket
+;; Gramática BNF
 ;; ==========================
 
 
-;; <circuit> ::= (circuit <gate-list>)
-;; <gate-list> ::= (gate-list <gate> ...)
-;; <gate> ::= (gate <gate-id> <type> <input-list>)
+;; <circuit> ::= '(circuit <gate-list>)
+;; <gate_list> ::= empty | <gate> <gate_list>
+;; <gate> ::= '(gate <gate_id> <type> <input-list>)
 ;; <gate-id> ::= identificador de la compuerta
 ;; <type> ::= and | or | not | xor
-;; <input-list> ::= (input-list <bool> ... | <gate-ref> ...)
-;; <gate-ref> ::= identificador de otra compuerta
+;; <input_list> ::= empty | <bool> <input_list> | <gate_ref> <input_list>
+;; <gate_ref> ::= identificador de otra compuerta
 
 
 
@@ -35,7 +33,7 @@
 
 ;; Constructor de una lista de compuertas
 (define (make-gate-list . gates)
-  (cons 'gate-list gates))    ;;Crea una lista de compuertas a partir de una o más compuertas.
+  (cons 'gate_list gates))    ;;Crea una lista de compuertas a partir de una o más compuertas.
 
 ;; Constructor de una compuerta lógica
 (define (make-gate gate-id type input-list)
@@ -43,7 +41,7 @@
 
 ;; Constructor de una lista de entradas
 (define (make-input-list . inputs)
-  (cons 'input-list inputs))   ;; Crea una lista de entradas, que pueden ser valores booleanos o referencias a otras compuertas.
+  (cons 'input_list inputs))   ;; Crea una lista de entradas, que pueden ser valores booleanos o referencias a otras compuertas.
 
 ;; ==============================
 ;; Extractores para los datos
@@ -97,47 +95,67 @@
 (define circuito1
   (make-circuit
    (make-gate-list
-    (make-gate 'G1 'not (make-input-list 'A)))))
+    (make-gate 'G1 '(type not) (make-input-list 'A)))))
 
 ;; Ejemplo 2: Circuito AND simple
 (define circuito2
   (make-circuit
    (make-gate-list
-    (make-gate 'G1 'and (make-input-list 'A 'B)))))
+    (make-gate 'G1 '(type and) (make-input-list 'A 'B)))))
 
 ;; Ejemplo 3: Combinación de compuertas
 (define circuito3
   (make-circuit
    (make-gate-list
-    (make-gate 'G1 'or (make-input-list 'A 'B))
-    (make-gate 'G2 'not (make-input-list 'G1)))))
+    (make-gate 'G1 '(type or) (make-input-list 'A 'B))
+    (make-gate 'G2 '(type not) (make-input-list 'G1)))))
 
 ;; Ejemplo 4: Implementación de XOR sin XOR
 (define circuito4
   (make-circuit
    (make-gate-list
-    (make-gate 'G1 'or (make-input-list 'A 'B))
-    (make-gate 'G2 'and (make-input-list 'A 'B))
-    (make-gate 'G3 'not (make-input-list 'G2))
-    (make-gate 'G4 'and (make-input-list 'G1 'G3)))))
+    (make-gate 'G1 '(type or) (make-input-list 'A 'B))
+    (make-gate 'G2 '(type and) (make-input-list 'A 'B))
+    (make-gate 'G3 '(type not) (make-input-list 'G2))
+    (make-gate 'G4 '(type and) (make-input-list 'G1 'G3)))))
 
 ;; ========================================
 ;; Pruebas con los circuitos dados
 ;; ========================================
 
-(display "Prueba 1: Extraer lista de compuertas de circuito1")
+(display "Circuito 1:")
+(newline)
+(newline)
+(display circuito1)
+(newline)
+(display "\nPrueba 1: Extraer lista de compuertas de circuito1")
 (newline)
 (display (circuit->gate-list circuito1)) 
 (newline) ;; Resultado esperado: (gate-list (gate G1 not (input-list A)))
+(display "**********************************************************")
+(newline)
 
-(display "Prueba 2: Extraer tipo de la compuerta G4")
+(display "Circuito 4:")
+(newline)
+(newline)
+(display circuito4)
+(newline)
+(display "\nPrueba 2: Extraer tipo de la compuerta G4")
 (newline)
 (display (gate->type (gate-list->first (gate-list->rest (gate-list->rest (gate-list->rest (circuit->gate-list circuito4)))))))
 (newline) ;; Resultado esperado: and
+(display "**********************************************************")
+(newline)
 
-(display "Prueba 3: Extraer identificador de la primera compuerta")
+(display "Circuito 2:")
+(newline)
+(newline)
+(display circuito2)
+(newline)
+(display "\nPrueba 3: Extraer identificador de la primera compuerta")
 (newline)
 (display (gate->gate-id (gate-list->first (circuit->gate-list circuito2))))
 (newline) ;; Resultado esperado: G1
-
+(display "**********************************************************")
+(newline)
 
